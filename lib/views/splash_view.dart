@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:news_app/routes/app_pages.dart';
+import 'package:news_app/routes/app_routes.dart';
 import 'package:news_app/utils/app_colors.dart';
 
 class SplashView extends StatefulWidget {

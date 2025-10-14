@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:news_app/controllers/news_controller.dart';
-import 'package:news_app/routes/app_pages.dart';
+import 'package:news_app/routes/app_routes.dart';
 import 'package:news_app/utils/app_colors.dart';
 import 'package:news_app/widgets/news_card.dart';
 import 'package:news_app/widgets/category_chip.dart';
