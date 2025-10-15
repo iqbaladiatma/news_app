@@ -183,9 +183,9 @@ Distributed under the MIT License. See `LICENSE` for more information.
 ## 👨‍💻 Developer
 
 **[Your Name]**
-- GitHub: [@yourusername](https://github.com/yourusername)
-- Email: your.email@example.com
-- LinkedIn: [Your LinkedIn](https://linkedin.com/in/yourprofile)
+- GitHub: [@iqbaladiatma](https://github.com/iqbaladiatma)
+- Email: iqbal@iqbaladiatma.my.id
+- LinkedIn: [Iqbal Muhammad Adiatma](https://linkedin.com/in/iqbaladiatma)
 
 ## 🙏 Acknowledgments
 
@@ -195,5 +195,6 @@ Distributed under the MIT License. See `LICENSE` for more information.
 - Material Design team untuk design guidelines
 
 ---
+
 
 ⭐ **Jika project ini membantu Anda, jangan lupa berikan star!** ⭐
