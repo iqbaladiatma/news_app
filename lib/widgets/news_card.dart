@@ -19,18 +19,26 @@ class _NewsCardState extends State<NewsCard>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
+  late Animation<double> _elevationAnimation;
   bool _isPressed = false;
 
   @override
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: Duration(milliseconds: 150),
+      duration: Duration(milliseconds: 200),
       vsync: this,
     );
     _scaleAnimation = Tween<double>(
       begin: 1.0,
-      end: 0.95,
+      end: 0.97,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    ));
+    _elevationAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
     ).animate(CurvedAnimation(
       parent: _animationController,
       curve: Curves.easeInOut,
@@ -62,170 +70,379 @@ class _NewsCardState extends State<NewsCard>
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: _scaleAnimation,
+      animation: _animationController,
       builder: (context, child) {
         return Transform.scale(
           scale: _scaleAnimation.value,
           child: Container(
+            margin: EdgeInsets.all(8),
             decoration: BoxDecoration(
-              gradient: AppColors.cardGradient,
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(
-                color: AppColors.border,
-                width: 1,
-              ),
+              borderRadius: BorderRadius.circular(28),
               boxShadow: [
                 BoxShadow(
-                  color: _isPressed 
-                    ? AppColors.shadowDark 
-                    : AppColors.shadow,
-                  blurRadius: _isPressed ? 8 : 20,
-                  offset: Offset(0, _isPressed ? 2 : 8),
-                  spreadRadius: 0,
+                  color: AppColors.shadow.withOpacity(0.3 - (_elevationAnimation.value * 0.2)),
+                  blurRadius: 24 - (_elevationAnimation.value * 8),
+                  offset: Offset(0, 12 - (_elevationAnimation.value * 6)),
+                  spreadRadius: -8,
+                ),
+                BoxShadow(
+                  color: AppColors.shadowDark.withOpacity(0.15),
+                  blurRadius: 6,
+                  offset: Offset(0, 2),
+                  spreadRadius: -2,
                 ),
               ],
             ),
             child: Material(
               color: Colors.transparent,
-              child: GestureDetector(
+              child: InkWell(
+                onTap: widget.onTap,
                 onTapDown: _onTapDown,
                 onTapUp: _onTapUp,
                 onTapCancel: _onTapCancel,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Modern Image with Hero Animation
-                    if (widget.article.urlToImage != null)
-                      Hero(
-                        tag: 'news_image_${widget.article.url}',
-                        child: Stack(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.vertical(
-                                top: Radius.circular(24),
-                              ),
-                              child: CachedNetworkImage(
-                                imageUrl: widget.article.urlToImage!,
-                                height: 220,
-                                width: double.infinity,
-                                fit: BoxFit.cover,
-                                placeholder: (context, url) => Container(
-                                  height: 220,
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                      colors: [
-                                        AppColors.divider,
-                                        AppColors.background,
-                                      ],
-                                    ),
+                borderRadius: BorderRadius.circular(28),
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: AppColors.cardGradient,
+                    borderRadius: BorderRadius.circular(28),
+                    border: Border.all(
+                      color: AppColors.border.withOpacity(0.1),
+                      width: 1,
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Enhanced Image Section with Modern Design
+                      if (widget.article.urlToImage != null)
+                        Hero(
+                          tag: 'news_image_${widget.article.url}',
+                          child: Stack(
+                            children: [
+                              Container(
+                                height: 200,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.vertical(
+                                    top: Radius.circular(28),
                                   ),
-                                  child: Center(
-                                    child: Container(
-                                      padding: EdgeInsets.all(16),
+                                  child: CachedNetworkImage(
+                                    imageUrl: widget.article.urlToImage!,
+                                    width: double.infinity,
+                                    fit: BoxFit.cover,
+                                    placeholder: (context, url) => Container(
+                                      height: 200,
                                       decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        shape: BoxShape.circle,
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: AppColors.shadow,
-                                            blurRadius: 10,
-                                            offset: Offset(0, 4),
-                                          ),
-                                        ],
+                                        gradient: LinearGradient(
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                          colors: [
+                                            AppColors.divider.withOpacity(0.5),
+                                            AppColors.background.withOpacity(0.8),
+                                          ],
+                                        ),
                                       ),
-                                      child: CircularProgressIndicator(
-                                        color: AppColors.primary,
-                                        strokeWidth: 3,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                errorWidget: (context, url, error) => Container(
-                                  height: 220,
-                                  decoration: BoxDecoration(
-                                    gradient: AppColors.primaryGradient.scale(0.1),
-                                  ),
-                                  child: Center(
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          padding: EdgeInsets.all(20),
+                                      child: Center(
+                                        child: Container(
+                                          width: 40,
+                                          height: 40,
+                                          padding: EdgeInsets.all(8),
                                           decoration: BoxDecoration(
-                                            color: Colors.white,
+                                            color: Colors.white.withOpacity(0.9),
                                             shape: BoxShape.circle,
                                             boxShadow: [
                                               BoxShadow(
-                                                color: AppColors.shadow,
-                                                blurRadius: 10,
-                                                offset: Offset(0, 4),
+                                                color: AppColors.shadow.withOpacity(0.2),
+                                                blurRadius: 8,
+                                                offset: Offset(0, 2),
                                               ),
                                             ],
                                           ),
-                                          child: Icon(
-                                            Icons.image_not_supported_rounded,
-                                            size: 32,
-                                            color: AppColors.textHint,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            color: AppColors.primary,
                                           ),
                                         ),
-                                        SizedBox(height: 12),
-                                        Text(
-                                          'Image not available',
-                                          style: TextStyle(
-                                            color: AppColors.textSecondary,
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    errorWidget: (context, url, error) => Container(
+                                      height: 200,
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                          colors: [
+                                            AppColors.primary.withOpacity(0.05),
+                                            AppColors.secondary.withOpacity(0.05),
+                                          ],
+                                        ),
+                                      ),
+                                      child: Center(
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Container(
+                                              padding: EdgeInsets.all(16),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white.withOpacity(0.9),
+                                                shape: BoxShape.circle,
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: AppColors.shadow.withOpacity(0.1),
+                                                    blurRadius: 8,
+                                                    offset: Offset(0, 2),
+                                                  ),
+                                                ],
+                                              ),
+                                              child: Icon(
+                                                Icons.photo_library_rounded,
+                                                size: 28,
+                                                color: AppColors.textHint,
+                                              ),
+                                            ),
+                                            SizedBox(height: 8),
+                                            Text(
+                                              'No Image',
+                                              style: TextStyle(
+                                                color: AppColors.textSecondary,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              // Modern gradient overlay for better text readability
+                              Positioned.fill(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(28),
+                                    ),
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter,
+                                      colors: [
+                                        Colors.transparent,
+                                        Colors.transparent,
+                                        Colors.black.withOpacity(0.02),
+                                        Colors.black.withOpacity(0.1),
+                                        Colors.black.withOpacity(0.3),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              // Modern source badge with glass morphism effect
+                              if (widget.article.source?.name != null)
+                                Positioned(
+                                  top: 16,
+                                  left: 16,
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 14,
+                                      vertical: 8,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.95),
+                                      borderRadius: BorderRadius.circular(14),
+                                      border: Border.all(
+                                        color: Colors.white.withOpacity(0.8),
+                                        width: 1,
+                                      ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.1),
+                                          blurRadius: 12,
+                                          offset: Offset(0, 4),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Container(
+                                          width: 6,
+                                          height: 6,
+                                          decoration: BoxDecoration(
+                                            gradient: AppColors.primaryGradient,
+                                            shape: BoxShape.circle,
+                                          ),
+                                        ),
+                                        SizedBox(width: 8),
+                                        ConstrainedBox(
+                                          constraints: BoxConstraints(maxWidth: 120),
+                                          child: Text(
+                                            widget.article.source!.name!,
+                                            style: TextStyle(
+                                              color: AppColors.textPrimary,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w700,
+                                              letterSpacing: 0.3,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
                                       ],
                                     ),
                                   ),
                                 ),
-                              ),
+                            ],
+                          ),
+                        )
+                      else
+                        // Enhanced placeholder with modern design
+                        Container(
+                          height: 200,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                AppColors.primary.withOpacity(0.03),
+                                AppColors.secondary.withOpacity(0.03),
+                              ],
                             ),
-                            // Modern gradient overlay
-                            Positioned(
-                              bottom: 0,
-                              left: 0,
-                              right: 0,
-                              child: Container(
-                                height: 80,
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
-                                    colors: [
-                                      Colors.transparent,
-                                      Colors.black.withOpacity(0.4),
-                                      Colors.black.withOpacity(0.7),
-                                    ],
-                                  ),
-                                ),
-                              ),
+                            borderRadius: BorderRadius.vertical(
+                              top: Radius.circular(28),
                             ),
-                            // Modern source badge
-                            if (widget.article.source?.name != null)
-                              Positioned(
-                                top: 16,
-                                left: 16,
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 8,
-                                  ),
+                          ),
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(20),
                                   decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.95),
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(
-                                      color: AppColors.border,
-                                      width: 1,
-                                    ),
+                                    color: Colors.white.withOpacity(0.9),
+                                    shape: BoxShape.circle,
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.black.withOpacity(0.1),
-                                        blurRadius: 10,
+                                        color: AppColors.shadow.withOpacity(0.1),
+                                        blurRadius: 12,
+                                        offset: Offset(0, 4),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Icon(
+                                    Icons.article_rounded,
+                                    size: 36,
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+                                SizedBox(height: 12),
+                                Text(
+                                  'News Article',
+                                  style: TextStyle(
+                                    color: AppColors.textSecondary,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+
+                      // Modern Content Section with better spacing
+                      Padding(
+                        padding: EdgeInsets.all(20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Modern time badge with improved design
+                            if (widget.article.publishedAt != null)
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppColors.background.withOpacity(0.8),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: AppColors.border.withOpacity(0.3),
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.access_time_rounded,
+                                      size: 12,
+                                      color: AppColors.secondary,
+                                    ),
+                                    SizedBox(width: 6),
+                                    Text(
+                                      timeago.format(
+                                        DateTime.parse(widget.article.publishedAt!),
+                                      ),
+                                      style: TextStyle(
+                                        color: AppColors.textSecondary,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                        letterSpacing: 0.2,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            SizedBox(height: 16),
+
+                            // Enhanced Title with better typography
+                            if (widget.article.title != null)
+                              Text(
+                                widget.article.title!,
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w800,
+                                  color: AppColors.textPrimary,
+                                  height: 1.4,
+                                  letterSpacing: -0.2,
+                                ),
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+
+                            SizedBox(height: 12),
+
+                            // Enhanced Description with better readability
+                            if (widget.article.description != null)
+                              Text(
+                                widget.article.description!,
+                                style: TextStyle(
+                                  color: AppColors.textSecondary,
+                                  fontSize: 14,
+                                  height: 1.6,
+                                  letterSpacing: 0.1,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+
+                            SizedBox(height: 20),
+
+                            // Modern footer with enhanced CTA
+                            Row(
+                              children: [
+                                // Enhanced Read More button
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 10,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    gradient: AppColors.primaryGradient,
+                                    borderRadius: BorderRadius.circular(12),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: AppColors.primary.withOpacity(0.3),
+                                        blurRadius: 8,
                                         offset: Offset(0, 4),
                                       ),
                                     ],
@@ -233,240 +450,67 @@ class _NewsCardState extends State<NewsCard>
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Container(
-                                        width: 6,
-                                        height: 6,
-                                        decoration: BoxDecoration(
-                                          gradient: AppColors.primaryGradient,
-                                          shape: BoxShape.circle,
+                                      Text(
+                                        'Read Article',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w700,
+                                          letterSpacing: 0.2,
                                         ),
                                       ),
                                       SizedBox(width: 6),
-                                      ConstrainedBox(
-                                        constraints: BoxConstraints(maxWidth: 100),
-                                        child: Text(
-                                          widget.article.source!.name!,
+                                      Icon(
+                                        Icons.arrow_forward_rounded,
+                                        size: 14,
+                                        color: Colors.white,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Spacer(),
+                                // Enhanced reading time with modern design
+                                if (widget.article.content != null)
+                                  Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 6,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.background.withOpacity(0.8),
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(
+                                        color: AppColors.border.withOpacity(0.3),
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          Icons.timer_outlined,
+                                          size: 12,
+                                          color: AppColors.textHint,
+                                        ),
+                                        SizedBox(width: 4),
+                                        Text(
+                                          '${(widget.article.content!.length / 200).ceil()} min',
                                           style: TextStyle(
-                                            color: AppColors.textPrimary,
+                                            color: AppColors.textHint,
                                             fontSize: 11,
                                             fontWeight: FontWeight.w600,
-                                            letterSpacing: 0.2,
                                           ),
-                                          overflow: TextOverflow.ellipsis,
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ),
+                              ],
+                            ),
                           ],
                         ),
-                      )
-                    else
-                      // Modern placeholder when no image
-                      Container(
-                        height: 220,
-                        decoration: BoxDecoration(
-                          gradient: AppColors.primaryGradient.scale(0.1),
-                          borderRadius: BorderRadius.vertical(
-                            top: Radius.circular(24),
-                          ),
-                        ),
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                padding: EdgeInsets.all(24),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  shape: BoxShape.circle,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: AppColors.shadow,
-                                      blurRadius: 15,
-                                      offset: Offset(0, 6),
-                                    ),
-                                  ],
-                                ),
-                                child: Icon(
-                                  Icons.newspaper_rounded,
-                                  size: 40,
-                                  color: AppColors.primary,
-                                ),
-                              ),
-                              SizedBox(height: 16),
-                              Text(
-                                'News Article',
-                                style: TextStyle(
-                                  color: AppColors.textSecondary,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
                       ),
-
-                    // Modern Content Section
-                    Padding(
-                      padding: EdgeInsets.all(20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Modern time badge
-                          if (widget.article.publishedAt != null)
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 6,
-                              ),
-                              decoration: BoxDecoration(
-                                color: AppColors.background,
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
-                                  color: AppColors.border,
-                                  width: 1,
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Container(
-                                    width: 4,
-                                    height: 4,
-                                    decoration: BoxDecoration(
-                                      color: AppColors.secondary,
-                                      shape: BoxShape.circle,
-                                    ),
-                                  ),
-                                  SizedBox(width: 6),
-                                  Text(
-                                    timeago.format(
-                                      DateTime.parse(widget.article.publishedAt!),
-                                    ),
-                                    style: TextStyle(
-                                      color: AppColors.textSecondary,
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w600,
-                                      letterSpacing: 0.3,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          SizedBox(height: 16),
-
-                          // Modern Title
-                          if (widget.article.title != null)
-                            Text(
-                              widget.article.title!,
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.textPrimary,
-                                height: 1.4,
-                                letterSpacing: -0.3,
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-
-                          SizedBox(height: 12),
-
-                          // Modern Description
-                          if (widget.article.description != null)
-                            Text(
-                              widget.article.description!,
-                              style: TextStyle(
-                                color: AppColors.textSecondary,
-                                fontSize: 14,
-                                height: 1.6,
-                                letterSpacing: 0.1,
-                                fontWeight: FontWeight.w400,
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-
-                          SizedBox(height: 16),
-
-                          // Modern read more indicator with animation
-                          Row(
-                            children: [
-                              Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 6,
-                                ),
-                                decoration: BoxDecoration(
-                                  gradient: AppColors.primaryGradient.scale(0.1),
-                                  borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(
-                                    color: AppColors.primary.withOpacity(0.2),
-                                    width: 1,
-                                  ),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      'Read more',
-                                      style: TextStyle(
-                                        color: AppColors.primary,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w600,
-                                        letterSpacing: 0.2,
-                                      ),
-                                    ),
-                                    SizedBox(width: 6),
-                                    Icon(
-                                      Icons.arrow_forward_rounded,
-                                      size: 12,
-                                      color: AppColors.primary,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Spacer(),
-                              // Reading time estimate
-                              if (widget.article.content != null)
-                                Container(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 4,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.textHint.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(6),
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        Icons.schedule_rounded,
-                                        size: 10,
-                                        color: AppColors.textHint,
-                                      ),
-                                      SizedBox(width: 4),
-                                      Text(
-                                        '${(widget.article.content!.length / 200).ceil()} min',
-                                        style: TextStyle(
-                                          color: AppColors.textHint,
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
