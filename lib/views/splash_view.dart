@@ -4,10 +4,10 @@ import 'package:news_app/routes/app_routes.dart';
 import 'package:news_app/utils/app_colors.dart';
 
 class SplashView extends StatefulWidget {
-  const SplashView({Key? key}) : super(key: key);
+  const SplashView({super.key});
 
   @override
-  _SplashViewState createState() => _SplashViewState();
+  State<SplashView> createState() => _SplashViewState();
 }
 
 class _SplashViewState extends State<SplashView>
@@ -186,7 +186,9 @@ class _SplashViewState extends State<SplashView>
                                       child: Icon(
                                         Icons.newspaper_rounded,
                                         size: 80,
-                                        color: AppColors.primary.withOpacity(0.1),
+                                        color: AppColors.primary.withOpacity(
+                                          0.1,
+                                        ),
                                       ),
                                     ),
                                     // Main icon

@@ -4,6 +4,9 @@ import 'package:news_app/controllers/news_controller.dart';
 class HomeBinding implements Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<NewsController>(() => NewsController());
+    // Check if NewsController already exists, if not create it
+    if (!Get.isRegistered<NewsController>()) {
+      Get.put<NewsController>(NewsController(), permanent: true);
+    }
   }
 }
